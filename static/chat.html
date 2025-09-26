@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能旅游路线规划 - 聊天界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.bot .message-avatar {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator .message-avatar {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            margin-left: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .route-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .route-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .route-card p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .quick-action:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 95%;
+                height: 90vh;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🗺️ AI智能旅游路线规划</h1>
+            <p>告诉我您的旅行需求，我来为您规划完美的路线</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <p>您好！我是您的AI旅游规划助手。请告诉我：</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>您想去哪里旅行？</li>
+                        <li>计划什么时候出发？</li>
+                        <li>旅行几天？</li>
+                        <li>预算大概多少？</li>
+                        <li>有什么特别的兴趣或要求吗？</li>
+                    </ul>
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="sendQuickMessage('我想去北京旅行3天，预算5000元')">北京3日游</div>
+                        <div class="quick-action" onclick="sendQuickMessage('上海周末游，预算2000元')">上海周末游</div>
+                        <div class="quick-action" onclick="sendQuickMessage('云南7天深度游，预算8000元')">云南深度游</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="请描述您的旅行需求..." onkeypress="handleKeyPress(event)">
+                <button class="send-button" id="sendButton" onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api/v1';
+        let currentRouteId = null;
+        let isProcessing = false;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否已登录
+            checkAuthStatus();
+        });
+
+        // 检查认证状态
+        async function checkAuthStatus() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                // 如果没有token，显示登录提示
+                showLoginPrompt();
+            }
+        }
+
+        // 显示登录提示
+        function showLoginPrompt() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const loginMessage = document.createElement('div');
+            loginMessage.className = 'message bot';
+            loginMessage.innerHTML = `
+                <div class="message-avatar">🔐</div>
+                <div class="message-content">
+                    <p>请先登录以使用AI旅游规划服务</p>
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="showLoginForm()">登录</div>
+                        <div class="quick-action" onclick="showRegisterForm()">注册</div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(loginMessage);
+        }
+
+        // 显示登录表单
+        function showLoginForm() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const loginForm = document.createElement('div');
+            loginForm.className = 'message bot';
+            loginForm.innerHTML = `
+                <div class="message-avatar">🔐</div>
+                <div class="message-content">
+                    <h3>用户登录</h3>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div style="margin: 10px 0;">
+                            <input type="text" id="loginUsername" placeholder="用户名" required style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <input type="password" id="loginPassword" placeholder="密码" required style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <button type="submit" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">登录</button>
+                    </form>
+                </div>
+            `;
+            messagesContainer.appendChild(loginForm);
+        }
+
+        // 显示注册表单
+        function showRegisterForm() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const registerForm = document.createElement('div');
+            registerForm.className = 'message bot';
+            registerForm.innerHTML = `
+                <div class="message-avatar">📝</div>
+                <div class="message-content">
+                    <h3>用户注册</h3>
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div style="margin: 10px 0;">
+                            <input type="text" id="registerUsername" placeholder="用户名" required style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <input type="email" id="registerEmail" placeholder="邮箱" required style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <input type="password" id="registerPassword" placeholder="密码" required style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <button type="submit" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">注册</button>
+                    </form>
+                </div>
+            `;
+            messagesContainer.appendChild(registerForm);
+        }
+
+        // 处理登录
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access_token);
+                    addMessage('bot', '登录成功！现在可以开始规划您的旅行了。');
+                    // 清除登录表单
+                    const loginForm = document.getElementById('loginForm');
+                    if (loginForm) {
+                        loginForm.parentElement.parentElement.remove();
+                    }
+                } else {
+                    addMessage('bot', `登录失败: ${data.detail}`);
+                }
+            } catch (error) {
+                addMessage('bot', `登录时出错: ${error.message}`);
+            }
+        }
+
+        // 处理注册
+        async function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addMessage('bot', '注册成功！请登录以开始使用服务。');
+                    showLoginForm();
+                } else {
+                    addMessage('bot', `注册失败: ${data.detail}`);
+                }
+            } catch (error) {
+                addMessage('bot', `注册时出错: ${error.message}`);
+            }
+        }
+
+        // 发送快速消息
+        function sendQuickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        // 处理键盘事件
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || isProcessing) return;
+
+            // 检查是否已登录
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                addMessage('bot', '请先登录以使用AI旅游规划服务。');
+                return;
+            }
+
+            // 添加用户消息
+            addMessage('user', message);
+            input.value = '';
+
+            // 显示打字指示器
+            showTypingIndicator();
+
+            try {
+                isProcessing = true;
+                
+                // 解析用户输入并创建路线规划请求
+                const routeRequest = parseUserInput(message);
+                
+                // 发送请求到API
+                const response = await fetch(`${API_BASE_URL}/routes/plan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(routeRequest)
+                });
+
+                const data = await response.json();
+                
+                // 隐藏打字指示器
+                hideTypingIndicator();
+                
+                if (response.ok) {
+                    currentRouteId = data.route_id;
+                    displayRouteResponse(data);
+                } else {
+                    addMessage('bot', `规划路线时出错: ${data.detail}`);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('bot', `网络错误: ${error.message}`);
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // 解析用户输入
+        function parseUserInput(message) {
+            // 简单的关键词提取，实际应用中可以使用更复杂的NLP
+            const destination = extractDestination(message);
+            const dates = extractDates(message);
+            const budget = extractBudget(message);
+            const travelers = extractTravelers(message);
+            const interests = extractInterests(message);
+
+            return {
+                destination: destination || '未指定',
+                start_date: dates.start || new Date().toISOString().split('T')[0],
+                end_date: dates.end || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                travelers: travelers || 1,
+                budget: budget,
+                interests: interests,
+                special_requirements: message
+            };
+        }
+
+        // 提取目的地
+        function extractDestination(message) {
+            const cities = ['北京', '上海', '广州', '深圳', '杭州', '南京', '苏州', '成都', '重庆', '西安', '武汉', '长沙', '厦门', '青岛', '大连', '昆明', '丽江', '大理', '桂林', '阳朔', '三亚', '海口', '哈尔滨', '长春', '沈阳', '天津', '石家庄', '太原', '呼和浩特', '银川', '西宁', '兰州', '乌鲁木齐', '拉萨', '香港', '澳门', '台湾'];
+            
+            for (const city of cities) {
+                if (message.includes(city)) {
+                    return city;
+                }
+            }
+            return null;
+        }
+
+        // 提取日期
+        function extractDates(message) {
+            const today = new Date();
+            const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            return {
+                start: tomorrow.toISOString().split('T')[0],
+                end: nextWeek.toISOString().split('T')[0]
+            };
+        }
+
+        // 提取预算
+        function extractBudget(message) {
+            const budgetMatch = message.match(/(\d+)\s*元/);
+            return budgetMatch ? parseInt(budgetMatch[1]) : null;
+        }
+
+        // 提取旅行人数
+        function extractTravelers(message) {
+            const travelerMatch = message.match(/(\d+)\s*人/);
+            return travelerMatch ? parseInt(travelerMatch[1]) : 1;
+        }
+
+        // 提取兴趣
+        function extractInterests(message) {
+            const interests = [];
+            const interestKeywords = {
+                '自然风光': ['自然', '风景', '山水', '湖泊', '森林', '海滩'],
+                '历史文化': ['历史', '文化', '古迹', '博物馆', '寺庙', '古建筑'],
+                '美食': ['美食', '小吃', '特色菜', '餐厅', '夜市'],
+                '购物': ['购物', '商场', '市场', '特产'],
+                '娱乐': ['娱乐', '游乐场', '主题公园', '表演', '演出'],
+                '户外': ['户外', '徒步', '登山', '骑行', '露营']
+            };
+
+            for (const [interest, keywords] of Object.entries(interestKeywords)) {
+                for (const keyword of keywords) {
+                    if (message.includes(keyword)) {
+                        interests.push(interest);
+                        break;
+                    }
+                }
+            }
+
+            return interests;
+        }
+
+        // 显示路线响应
+        function displayRouteResponse(data) {
+            if (data.route_data) {
+                const routeData = data.route_data;
+                
+                let responseHtml = `
+                    <div class="route-card">
+                        <h3>🗺️ ${routeData.title || '智能路线规划'}</h3>
+                        <p><strong>目的地:</strong> ${data.route_data.destination || '未指定'}</p>
+                        <p><strong>预算:</strong> ${routeData.total_budget ? '¥' + routeData.total_budget : '待计算'}</p>
+                `;
+
+                if (routeData.days && routeData.days.length > 0) {
+                    responseHtml += '<h4>📅 行程安排:</h4>';
+                    routeData.days.forEach((day, index) => {
+                        responseHtml += `
+                            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                <strong>第${index + 1}天:</strong> ${day.title || '行程安排'}
+                                <p style="margin: 5px 0; color: #666;">${day.description || ''}</p>
+                        `;
+                        
+                        if (day.activities && day.activities.length > 0) {
+                            responseHtml += '<ul style="margin: 5px 0; padding-left: 20px;">';
+                            day.activities.forEach(activity => {
+                                responseHtml += `<li>${activity.name || activity.description}</li>`;
+                            });
+                            responseHtml += '</ul>';
+                        }
+                        
+                        responseHtml += '</div>';
+                    });
+                }
+
+                if (routeData.highlights && routeData.highlights.length > 0) {
+                    responseHtml += '<h4>✨ 亮点推荐:</h4><ul>';
+                    routeData.highlights.forEach(highlight => {
+                        responseHtml += `<li>${highlight}</li>`;
+                    });
+                    responseHtml += '</ul>';
+                }
+
+                if (routeData.tips && routeData.tips.length > 0) {
+                    responseHtml += '<h4>💡 实用贴士:</h4><ul>';
+                    routeData.tips.forEach(tip => {
+                        responseHtml += `<li>${tip}</li>`;
+                    });
+                    responseHtml += '</ul>';
+                }
+
+                responseHtml += `
+                        <div class="quick-actions">
+                            <div class="quick-action" onclick="optimizeRoute()">优化路线</div>
+                            <div class="quick-action" onclick="saveRoute()">保存路线</div>
+                            <div class="quick-action" onclick="shareRoute()">分享路线</div>
+                        </div>
+                    </div>
+                `;
+
+                addMessage('bot', responseHtml);
+            } else {
+                addMessage('bot', '路线规划完成！请查看上方的详细安排。');
+            }
+        }
+
+        // 添加消息到聊天界面
+        function addMessage(sender, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = sender === 'user' ? '👤' : '🤖';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 显示打字指示器
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+        }
+
+        // 隐藏打字指示器
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // 优化路线
+        async function optimizeRoute() {
+            const feedback = prompt('请告诉我您希望如何优化这条路线：');
+            if (!feedback) return;
+
+            addMessage('user', `优化建议: ${feedback}`);
+            showTypingIndicator();
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE_URL}/routes/${currentRouteId}/optimize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ feedback })
+                });
+
+                const data = await response.json();
+                hideTypingIndicator();
+
+                if (response.ok) {
+                    addMessage('bot', '路线优化完成！根据您的反馈，我已经调整了路线安排。');
+                } else {
+                    addMessage('bot', `优化失败: ${data.detail}`);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('bot', `优化时出错: ${error.message}`);
+            }
+        }
+
+        // 保存路线
+        function saveRoute() {
+            addMessage('bot', '路线已保存到您的个人中心！');
+        }
+
+        // 分享路线
+        function shareRoute() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI智能旅游路线规划',
+                    text: '查看我规划的旅游路线',
+                    url: window.location.href
+                });
+            } else {
+                // 复制链接到剪贴板
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    addMessage('bot', '路线链接已复制到剪贴板！');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

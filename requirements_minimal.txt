@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+redis
+httpx
+python-multipart
+jinja2
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+geopy
+openai
