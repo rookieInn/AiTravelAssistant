@@ -75,6 +75,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         help="Users whose last_login_at is older than this many days will be selected.",
     )
     parser.add_argument(
+        "--cutoff-date",
+        type=str,
+        help="ISO8601 date/time (e.g. 2024-06-01 or 2024-06-01T00:00:00). "
+        "Overrides --older-than-days when provided.",
+    )
+    parser.add_argument(
         "--limit",
         type=int,
         help="Optional limit for number of inactive users to process (useful for batching).",
@@ -269,12 +275,27 @@ def cleanup_users(users: Iterable[InactiveUser], bucket: oss2.Bucket, batch_size
     )
 
 
+def parse_cutoff(args: argparse.Namespace) -> dt.datetime:
+    if args.cutoff_date:
+        try:
+            parsed = dt.datetime.fromisoformat(args.cutoff_date)
+        except ValueError:
+            logging.error("Failed to parse --cutoff-date '%s'. Use ISO8601 format.", args.cutoff_date)
+            raise SystemExit(2)
+        if isinstance(parsed, dt.datetime):
+            if parsed.tzinfo:
+                return parsed.astimezone(dt.timezone.utc).replace(tzinfo=None)
+            return parsed
+    cutoff = dt.datetime.utcnow() - dt.timedelta(days=args.older_than_days)
+    return cutoff
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     configure_logging(args.log_level)
     maybe_load_dotenv()
 
-    cutoff = dt.datetime.utcnow() - dt.timedelta(days=args.older_than_days)
+    cutoff = parse_cutoff(args)
     logging.info("Cutoff timestamp: %s", cutoff.isoformat())
 
     dry_run = not args.apply
