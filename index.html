@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Midjourney 参数拼接助手</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="intro">
+        <div>
+          <p class="eyebrow">/imagine prompt</p>
+          <h1>Midjourney 参数拼接助手</h1>
+          <p class="lede">
+            通过输入提示词、点击按钮选择常用参数，即可实时拼接完整的
+            Midjourney 指令，支持复制与重置。
+          </p>
+        </div>
+        <div class="actions">
+          <button class="ghost" id="resetBtn" type="button">重置</button>
+          <button class="primary" id="copyBtn" type="button">复制指令</button>
+        </div>
+      </header>
+
+      <section class="panel">
+        <label class="field">
+          <span>提示词（Prompt）</span>
+          <textarea
+            id="promptInput"
+            rows="3"
+            placeholder="例：cinematic photo of a futuristic city skyline at golden hour"
+          ></textarea>
+        </label>
+
+        <label class="field">
+          <span>反向提示词（--no）</span>
+          <textarea
+            id="negativeInput"
+            rows="2"
+            placeholder="例：text, watermark, people"
+          ></textarea>
+        </label>
+
+        <label class="field">
+          <span>自定义附加参数</span>
+          <input
+            id="customInput"
+            type="text"
+            placeholder="例：--seed 123456 --stylize 750"
+          />
+        </label>
+      </section>
+
+      <section class="panel">
+        <h2>常用参数</h2>
+
+        <div class="param-group" data-multi="false">
+          <div class="group-head">
+            <h3>画面比例 --ar</h3>
+            <span>单选，可重复点击取消</span>
+          </div>
+          <div class="button-row" role="group" aria-label="画面比例">
+            <button type="button" class="param-button" data-group="ar" data-param="--ar 1:1">1:1 方形</button>
+            <button type="button" class="param-button" data-group="ar" data-param="--ar 3:2">3:2 横幅</button>
+            <button type="button" class="param-button" data-group="ar" data-param="--ar 16:9">16:9 宽屏</button>
+            <button type="button" class="param-button" data-group="ar" data-param="--ar 21:9">21:9 电影</button>
+          </div>
+        </div>
+
+        <div class="param-group" data-multi="false">
+          <div class="group-head">
+            <h3>风格强度 --stylize</h3>
+            <span>单选</span>
+          </div>
+          <div class="button-row" role="group" aria-label="风格强度">
+            <button type="button" class="param-button" data-group="stylize" data-param="--stylize 50">50</button>
+            <button type="button" class="param-button" data-group="stylize" data-param="--stylize 100">100</button>
+            <button type="button" class="param-button" data-group="stylize" data-param="--stylize 250">250</button>
+            <button type="button" class="param-button" data-group="stylize" data-param="--stylize 750">750</button>
+          </div>
+        </div>
+
+        <div class="param-group" data-multi="false">
+          <div class="group-head">
+            <h3>混乱度 --chaos</h3>
+            <span>单选</span>
+          </div>
+          <div class="button-row" role="group" aria-label="混乱度">
+            <button type="button" class="param-button" data-group="chaos" data-param="--chaos 0">0</button>
+            <button type="button" class="param-button" data-group="chaos" data-param="--chaos 20">20</button>
+            <button type="button" class="param-button" data-group="chaos" data-param="--chaos 35">35</button>
+            <button type="button" class="param-button" data-group="chaos" data-param="--chaos 50">50</button>
+          </div>
+        </div>
+
+        <div class="param-group" data-multi="false">
+          <div class="group-head">
+            <h3>质量 --quality</h3>
+            <span>单选</span>
+          </div>
+          <div class="button-row" role="group" aria-label="质量">
+            <button type="button" class="param-button" data-group="quality" data-param="--quality .5">0.5</button>
+            <button type="button" class="param-button" data-group="quality" data-param="--quality 1">1</button>
+            <button type="button" class="param-button" data-group="quality" data-param="--quality 2">2</button>
+          </div>
+        </div>
+
+        <div class="param-group" data-multi="false">
+          <div class="group-head">
+            <h3>版本 --v</h3>
+            <span>单选</span>
+          </div>
+          <div class="button-row" role="group" aria-label="版本">
+            <button type="button" class="param-button" data-group="version" data-param="--v 5.2">5.2</button>
+            <button type="button" class="param-button" data-group="version" data-param="--v 6">6</button>
+          </div>
+        </div>
+
+        <div class="param-group" data-multi="true">
+          <div class="group-head">
+            <h3>可组合开关</h3>
+            <span>多选</span>
+          </div>
+          <div class="button-row" role="group" aria-label="可组合开关">
+            <button type="button" class="param-button" data-group="switches" data-multi="true" data-param="--tile">--tile</button>
+            <button type="button" class="param-button" data-group="switches" data-multi="true" data-param="--style raw">--style raw</button>
+            <button type="button" class="param-button" data-group="switches" data-multi="true" data-param="--uplight">--uplight</button>
+            <button type="button" class="param-button" data-group="switches" data-multi="true" data-param="--upbeta">--upbeta</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="group-head">
+          <h2>拼接结果</h2>
+          <small id="feedback" role="status" aria-live="polite"></small>
+        </div>
+        <pre id="result" class="result" tabindex="0"></pre>
+      </section>
+    </main>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
