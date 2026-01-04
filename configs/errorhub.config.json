@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "defaults": {
+    "category": "UNKNOWN",
+    "severity": "P2",
+    "retryable": "unknown"
+  },
+  "error_code_registry": [
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-1\\d{3}$",
+      "category": "VALIDATION",
+      "severity": "P4",
+      "retryable": false
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-2\\d{3}$",
+      "category": "AUTHENTICATION",
+      "severity": "P3",
+      "retryable": false
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-3\\d{3}$",
+      "category": "RATE_LIMIT",
+      "severity": "P2",
+      "retryable": true
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-4\\d{3}$",
+      "category": "DEPENDENCY",
+      "severity": "P1",
+      "retryable": true
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-5\\d{3}$",
+      "category": "DATABASE",
+      "severity": "P1",
+      "retryable": true
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-6\\d{3}$",
+      "category": "RUNTIME",
+      "severity": "P0",
+      "retryable": "unknown"
+    },
+    {
+      "pattern": "^[A-Z][A-Z0-9]{2,9}-[A-Z0-9]{2,12}-7\\d{3}$",
+      "category": "BUSINESS_RULE",
+      "severity": "P4",
+      "retryable": false
+    }
+  ],
+  "rules": [
+    {
+      "id": "timeout",
+      "regex": "(deadline exceeded|context deadline exceeded|ReadTimeout|ConnectTimeout|ETIMEDOUT|timed out)",
+      "category": "TIMEOUT",
+      "severity": "P1",
+      "retryable": true
+    },
+    {
+      "id": "network",
+      "regex": "(ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|connection refused|no route to host|connection reset by peer)",
+      "category": "NETWORK",
+      "severity": "P1",
+      "retryable": true
+    },
+    {
+      "id": "auth",
+      "regex": "(unauthorized|token (expired|invalid)|invalid signature|authentication failed)",
+      "category": "AUTHENTICATION",
+      "severity": "P3",
+      "retryable": false
+    },
+    {
+      "id": "forbidden",
+      "regex": "(forbidden|permission denied|not allowed)",
+      "category": "AUTHORIZATION",
+      "severity": "P3",
+      "retryable": false
+    },
+    {
+      "id": "rate_limit",
+      "regex": "(rate limit|too many requests|throttl)",
+      "category": "RATE_LIMIT",
+      "severity": "P2",
+      "retryable": true
+    },
+    {
+      "id": "validation",
+      "regex": "(validation( error)?|invalid (argument|parameter)|missing required|schema violation)",
+      "category": "VALIDATION",
+      "severity": "P4",
+      "retryable": false
+    },
+    {
+      "id": "serialization",
+      "regex": "(json (parse|decode)|unexpected token|protobuf.*(decode|unmarshal)|cannot unmarshal)",
+      "category": "SERIALIZATION",
+      "severity": "P3",
+      "retryable": false
+    },
+    {
+      "id": "database",
+      "regex": "(SQLSTATE|deadlock|lock wait timeout|too many connections|could not connect to (server|database)|relation .* does not exist)",
+      "category": "DATABASE",
+      "severity": "P1",
+      "retryable": true
+    },
+    {
+      "id": "cache",
+      "regex": "(redis|cache).*?(timeout|down|refused|unavailable)|MOVED \\d+|NOAUTH Authentication required",
+      "category": "CACHE",
+      "severity": "P2",
+      "retryable": true
+    },
+    {
+      "id": "queue",
+      "regex": "(kafka|rabbitmq|nats|sqs).*?(error|failed|timeout)|broker.*(down|unavailable)|offset out of range",
+      "category": "QUEUE",
+      "severity": "P2",
+      "retryable": true
+    },
+    {
+      "id": "resource_exhausted",
+      "regex": "(out of memory|OOM|cannot allocate memory|too many open files|threadpool.*exhaust|connection pool.*exhaust)",
+      "category": "RESOURCE_EXHAUSTED",
+      "severity": "P0",
+      "retryable": "unknown"
+    },
+    {
+      "id": "config",
+      "regex": "(missing (env|environment variable)|config(uration)? (missing|invalid)|failed to load (config|certificate)|no such file or directory.*(config|cert))",
+      "category": "CONFIG",
+      "severity": "P1",
+      "retryable": false
+    },
+    {
+      "id": "runtime",
+      "regex": "(panic:|segmentation fault|nullpointerexception|nil pointer|stacktrace|Traceback \\(most recent call last\\))",
+      "category": "RUNTIME",
+      "severity": "P0",
+      "retryable": "unknown"
+    }
+  ]
+}
+

@@ -1,0 +1,7 @@
+2026-01-04T02:12:11Z INFO service=order-service request_id=abc123 msg="request start"
+2026-01-04T02:12:12Z ERROR service=order-service error_code=ORDER-API-1001 msg="validation error: missing required field: check_in_date"
+2026-01-04T02:12:13Z ERROR service=order-service msg="context deadline exceeded while calling inventory-service"
+2026-01-04T02:12:14Z ERROR service=order-service msg="SQLSTATE[08006] could not connect to server: Connection refused"
+2026-01-04T02:12:15Z WARN service=order-service msg="too many requests: throttled by gateway"
+2026-01-04T02:12:16Z ERROR service=order-service msg="panic: runtime error: invalid memory address or nil pointer dereference"
+

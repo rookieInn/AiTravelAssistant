@@ -1,0 +1,12 @@
+service,category,severity,retryable,error_code,count,matched_by,rule_id,sample_1,sample_2,sample_3
+order-service,NETWORK,P1,True,NO_CODE,1,rule,network,"2026-01-04T02:12:14Z ERROR service=order-service msg=""SQLSTATE[08006] could not connect to server: Connection refused""",,
+order-service,RATE_LIMIT,P2,True,NO_CODE,1,rule,rate_limit,"2026-01-04T02:12:15Z WARN service=order-service msg=""too many requests: throttled by gateway""",,
+order-service,RUNTIME,P0,unknown,NO_CODE,1,rule,runtime,"2026-01-04T02:12:16Z ERROR service=order-service msg=""panic: runtime error: invalid memory address or nil pointer dereference""",,
+order-service,TIMEOUT,P1,True,NO_CODE,1,rule,timeout,"2026-01-04T02:12:13Z ERROR service=order-service msg=""context deadline exceeded while calling inventory-service""",,
+order-service,UNKNOWN,P2,unknown,NO_CODE,1,default,,"2026-01-04T02:12:11Z INFO service=order-service request_id=abc123 msg=""request start""",,
+order-service,VALIDATION,P4,False,ORDER-API-1001,1,error_code_registry,,"2026-01-04T02:12:12Z ERROR service=order-service error_code=ORDER-API-1001 msg=""validation error: missing required field: check_in_date""",,
+pay-service,AUTHENTICATION,P3,False,NO_CODE,1,rule,auth,token expired for user session,,
+pay-service,DEPENDENCY,P1,True,PAY-GW-4002,1,error_code_registry,,payment gateway timeout,,
+pay-service,NETWORK,P1,True,NO_CODE,1,rule,network,ECONNREFUSED when calling acme-pay,,
+pay-service,RESOURCE_EXHAUSTED,P0,unknown,NO_CODE,1,rule,resource_exhausted,out of memory: cannot allocate memory,,
+pay-service,TIMEOUT,P1,True,NO_CODE,1,rule,timeout,redis timeout: ReadTimeout on GET idempotency-key,,
