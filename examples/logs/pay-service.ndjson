@@ -1,0 +1,6 @@
+{"timestamp":"2026-01-04T03:01:02Z","level":"ERROR","service":"pay-service","error_code":"PAY-GW-4002","message":"payment gateway timeout","gateway":"acme-pay","trace_id":"t-001"}
+{"timestamp":"2026-01-04T03:01:03Z","level":"ERROR","service":"pay-service","message":"ECONNREFUSED when calling acme-pay","trace_id":"t-002"}
+{"timestamp":"2026-01-04T03:01:04Z","level":"WARN","service":"pay-service","message":"token expired for user session","trace_id":"t-003"}
+{"timestamp":"2026-01-04T03:01:05Z","level":"ERROR","service":"pay-service","message":"redis timeout: ReadTimeout on GET idempotency-key","trace_id":"t-004"}
+{"timestamp":"2026-01-04T03:01:06Z","level":"ERROR","service":"pay-service","message":"out of memory: cannot allocate memory","trace_id":"t-005"}
+

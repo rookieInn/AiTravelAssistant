@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-01-04T10:45:46.690495+00:00",
+  "config": "/workspace/configs/errorhub.config.json",
+  "inputs": [
+    "/workspace/examples/logs/order-service.log",
+    "/workspace/examples/logs/pay-service.ndjson"
+  ],
+  "files": [
+    "/workspace/examples/logs/order-service.log",
+    "/workspace/examples/logs/pay-service.ndjson"
+  ],
+  "total_events": 11,
+  "groups": [
+    {
+      "service": "order-service",
+      "category": "NETWORK",
+      "severity": "P1",
+      "retryable": "True",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "network",
+      "samples": [
+        "2026-01-04T02:12:14Z ERROR service=order-service msg=\"SQLSTATE[08006] could not connect to server: Connection refused\""
+      ]
+    },
+    {
+      "service": "order-service",
+      "category": "RATE_LIMIT",
+      "severity": "P2",
+      "retryable": "True",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "rate_limit",
+      "samples": [
+        "2026-01-04T02:12:15Z WARN service=order-service msg=\"too many requests: throttled by gateway\""
+      ]
+    },
+    {
+      "service": "order-service",
+      "category": "RUNTIME",
+      "severity": "P0",
+      "retryable": "unknown",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "runtime",
+      "samples": [
+        "2026-01-04T02:12:16Z ERROR service=order-service msg=\"panic: runtime error: invalid memory address or nil pointer dereference\""
+      ]
+    },
+    {
+      "service": "order-service",
+      "category": "TIMEOUT",
+      "severity": "P1",
+      "retryable": "True",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "timeout",
+      "samples": [
+        "2026-01-04T02:12:13Z ERROR service=order-service msg=\"context deadline exceeded while calling inventory-service\""
+      ]
+    },
+    {
+      "service": "order-service",
+      "category": "UNKNOWN",
+      "severity": "P2",
+      "retryable": "unknown",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "default",
+      "rule_id": null,
+      "samples": [
+        "2026-01-04T02:12:11Z INFO service=order-service request_id=abc123 msg=\"request start\""
+      ]
+    },
+    {
+      "service": "order-service",
+      "category": "VALIDATION",
+      "severity": "P4",
+      "retryable": "False",
+      "error_code": "ORDER-API-1001",
+      "count": 1,
+      "matched_by": "error_code_registry",
+      "rule_id": null,
+      "samples": [
+        "2026-01-04T02:12:12Z ERROR service=order-service error_code=ORDER-API-1001 msg=\"validation error: missing required field: check_in_date\""
+      ]
+    },
+    {
+      "service": "pay-service",
+      "category": "AUTHENTICATION",
+      "severity": "P3",
+      "retryable": "False",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "auth",
+      "samples": [
+        "token expired for user session"
+      ]
+    },
+    {
+      "service": "pay-service",
+      "category": "DEPENDENCY",
+      "severity": "P1",
+      "retryable": "True",
+      "error_code": "PAY-GW-4002",
+      "count": 1,
+      "matched_by": "error_code_registry",
+      "rule_id": null,
+      "samples": [
+        "payment gateway timeout"
+      ]
+    },
+    {
+      "service": "pay-service",
+      "category": "NETWORK",
+      "severity": "P1",
+      "retryable": "True",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "network",
+      "samples": [
+        "ECONNREFUSED when calling acme-pay"
+      ]
+    },
+    {
+      "service": "pay-service",
+      "category": "RESOURCE_EXHAUSTED",
+      "severity": "P0",
+      "retryable": "unknown",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "resource_exhausted",
+      "samples": [
+        "out of memory: cannot allocate memory"
+      ]
+    },
+    {
+      "service": "pay-service",
+      "category": "TIMEOUT",
+      "severity": "P1",
+      "retryable": "True",
+      "error_code": "NO_CODE",
+      "count": 1,
+      "matched_by": "rule",
+      "rule_id": "timeout",
+      "samples": [
+        "redis timeout: ReadTimeout on GET idempotency-key"
+      ]
+    }
+  ]
+}
